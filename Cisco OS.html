@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Password Security Tool for Cisco </title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #4361ee;
+            --secondary-color: #7209b7;
+            --accent-color: #3a0ca3;
+            --light-bg: #f8f9fa;
+            --dark-bg: #212529;
+            --text-color: #333;
+            --light-text: #6c757d;
+            --border-radius: 8px;
+            --box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-color);
+            line-height: 1.6;
+        }
+
+        .container {
+            background-color: rgba(255, 255, 255, 0.98);
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            padding: 30px;
+            width: 90%;
+            max-width: 800px;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        h1 {
+            text-align: center;
+            color: var(--primary-color);
+            margin-bottom: 30px;
+            border-bottom: 2px solid var(--secondary-color);
+            padding-bottom: 15px;
+            font-weight: 700;
+        }
+
+        h2 {
+            color: var(--accent-color);
+            margin-top: 10px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            font-size: 1.5rem;
+        }
+
+        h2 i {
+            margin-right: 10px;
+            font-size: 1.2em;
+        }
+
+        .section {
+            margin-bottom: 30px;
+            padding-bottom: 25px;
+            border-bottom: 1px dashed #ccc;
+            transition: all 0.3s ease;
+        }
+
+        .section:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            padding: 15px;
+            border-radius: var(--border-radius);
+            border-bottom: 1px dashed transparent;
+            background-color: var(--light-bg);
+        }
+
+        .section:last-child {
+            border-bottom: none;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--text-color);
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+
+        input[type="text"],
+        input[type="password"] {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: var(--border-radius);
+            font-size: 16px;
+            box-sizing: border-box;
+            transition: all 0.3s ease;
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        input[type="text"]:focus,
+        input[type="password"]:focus {
+            border-color: var(--primary-color);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.2);
+        }
+
+        .result {
+            background-color: var(--light-bg);
+            border: 1px solid #ddd;
+            border-radius: var(--border-radius);
+            padding: 15px;
+            margin-top: 10px;
+            word-break: break-all;
+            font-family: 'Consolas', monospace;
+            min-height: 20px;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .result:empty::before {
+            content: "Result will appear here";
+            color: var(--light-text);
+            font-style: italic;
+        }
+
+        .buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        button {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            font-weight: 600;
+            flex: 1;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        button i {
+            margin-right: 8px;
+        }
+
+        button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 7px 14px rgba(0, 0, 0, 0.15);
+            background: linear-gradient(135deg, var(--secondary-color), var(--primary-color));
+        }
+
+        button:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .countdown {
+            font-weight: bold;
+            color: #e74c3c;
+            margin-top: 10px;
+            padding: 10px;
+            border-radius: var(--border-radius);
+            background-color: rgba(231, 76, 60, 0.1);
+            border-left: 4px solid #e74c3c;
+        }
+
+        .copy-btn {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .result:hover .copy-btn {
+            opacity: 1;
+        }
+
+        .note {
+            font-size: 14px;
+            color: var(--light-text);
+            margin-top: 15px;
+            font-style: italic;
+            padding: 10px;
+            border-radius: var(--border-radius);
+            background-color: rgba(0, 0, 0, 0.03);
+            border-left: 3px solid var(--secondary-color);
+        }
+
+        .info-icon {
+            margin-left: 5px;
+            color: var(--primary-color);
+            cursor: help;
+            position: relative;
+        }
+
+        .info-tooltip {
+            position: absolute;
+            z-index: 1;
+            bottom: 125%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 250px;
+            background-color: var(--dark-bg);
+            color: white;
+            text-align: center;
+            border-radius: 6px;
+            padding: 10px;
+            visibility: hidden;
+            opacity: 0;
+            transition: opacity 0.3s;
+            font-weight: normal;
+            font-size: 0.85rem;
+        }
+
+        .info-icon:hover .info-tooltip {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+                width: 95%;
+            }
+            
+            button {
+                padding: 10px 15px;
+            }
+
+            h1 {
+                font-size: 1.5rem;
+            }
+
+            h2 {
+                font-size: 1.2rem;
+            }
+        }
+
+        /* Animation for feedback */
+        @keyframes success-pulse {
+            0% { box-shadow: 0 0 0 0 rgba(46, 204, 113, 0.4); }
+            70% { box-shadow: 0 0 0 10px rgba(46, 204, 113, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(46, 204, 113, 0); }
+        }
+
+        .animation-success {
+            animation: success-pulse 1.5s;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1><i class="fas fa-shield-alt"></i>Security Tools for Cisco IOS</h1>
+
+        <div class="section">
+            <h2><i class="fas fa-lock"></i> Cisco Type 7 Encryption</h2>
+
+            <!-- Encryption -->
+            <div class="input-group">
+                <label for="passwordEncrypt">
+                    Text to Encrypt:
+                    <span class="info-icon">
+                        <i class="fas fa-info-circle"></i>
+                        <span class="info-tooltip">Cisco Type 7 is a simple XOR encryption used in Cisco IOS configurations. Not secure for sensitive data.</span>
+                    </span>
+                </label>
+                <input type="text" id="passwordEncrypt" placeholder="Enter text to encrypt">
+                <div class="buttons">
+                    <button onclick="encryptType7Cisco()"><i class="fas fa-lock"></i> Encrypt</button>
+                </div>
+                <label>Result:</label>
+                <div id="encryptResult" class="result">
+                    <button class="copy-btn" onclick="copyToClipboard('encryptResult')"><i class="fas fa-copy"></i> Copy</button>
+                </div>
+            </div>
+
+            <!-- Decryption -->
+            <div class="input-group" style="margin-top: 20px;">
+                <label for="passwordDecrypt">Text to Decrypt:</label>
+                <input type="text" id="passwordDecrypt" placeholder="Enter encrypted value to decrypt">
+                <div class="buttons">
+                    <button onclick="decryptType7Cisco()"><i class="fas fa-unlock"></i> Decrypt</button>
+                </div>
+                <label>Result:</label>
+                <div id="decryptResult" class="result">
+                    <button class="copy-btn" onclick="copyToClipboard('decryptResult')"><i class="fas fa-copy"></i> Copy</button>
+                </div>
+            </div>
+
+            <p class="note"><i class="fas fa-lightbulb"></i> Note: Type 7 Encryption is Vulnerable to brute-force attacks and can be instantly decrypted using online tools or simple scripts. </p>
+        </div>
+
+        <div class="section">
+            <h2><i class="fas fa-fingerprint"></i> SHA-256 Hash</h2>
+            <div class="input-group">
+                <label for="password">Enter Password or Text:</label>
+                <input type="text" id="password" placeholder="Enter your password or message here">
+                <div class="buttons">
+                    <button onclick="hashSHA256()"><i class="fas fa-hash"></i> Generate Hash</button>
+                </div>
+                <label>Result:</label>
+                <div id="shaResult" class="result">
+                    <button class="copy-btn" onclick="copyToClipboard('shaResult')"><i class="fas fa-copy"></i> Copy</button>
+                </div>
+                <p class="note"><i class="fas fa-exclamation-triangle"></i> SHA-256 is a one-way hash function - once data is hashed, it cannot be reversed back to the original input.</p>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2><i class="fas fa-clock"></i> Reverse Hash Attempt</h2>
+            <div class="input-group">
+                <button onclick="startReverseHash()"><i class="fas fa-play"></i> Attempt Reverse Hash (Demonstration)</button>
+                <label>Status:</label>
+                <div id="reverseHashResult" class="result">
+                    Not started. Click button to demonstrate why reverse hashing is practically impossible.
+                </div>
+                <div id="countdown" class="countdown"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Cisco Type 7 encryption key
+        const ciscoKey = "dsfd;kfoA,.iyewrkldJKDHSUBsgvca69834ncxv9873254k;fg87";
+
+        function encryptType7Cisco() {
+            const input = document.getElementById('passwordEncrypt').value;
+            if (!input) {
+                document.getElementById('encryptResult').textContent = "Please enter text to encrypt first";
+                return;
+            }
+            const seed = 2;
+            let encrypted = seed.toString(16).toUpperCase();
+
+            // For each character, XOR with the corresponding character in the key plus the seed
+            for (let i = 0; i < input.length; i++) {
+                const keyChar = ciscoKey.charCodeAt((i + seed) % ciscoKey.length);
+                const charCode = input.charCodeAt(i) ^ keyChar;
+                encrypted += charCode.toString(16).padStart(2, '0').toUpperCase();
+            }
+
+            const resultElement = document.getElementById('encryptResult');
+            resultElement.textContent = encrypted;
+            animateSuccess(resultElement);
+        }
+
+        function decryptType7Cisco() {
+            const encrypted = document.getElementById('passwordDecrypt').value;
+            if (!encrypted || encrypted.length < 2) {
+                document.getElementById('decryptResult').textContent = "Please enter a valid encrypted value";
+                return;
+            }
+
+            try {
+                // First digit is the seed (0-15 or 0-F in hex)
+                const seed = parseInt(encrypted.charAt(0), 16);
+
+                // Validate the encrypted string
+                if (isNaN(seed) || !/^[0-9A-F]+$/.test(encrypted)) {
+                    throw new Error("Invalid Type 7 encrypted string format");
+                }
+
+                let decrypted = "";
+
+                // Process each byte (2 hex characters)
+                for (let i = 1; i < encrypted.length; i += 2) {
+                    if (i + 1 >= encrypted.length) break; // Ensure we have a complete byte
+
+                    const byteHex = encrypted.substring(i, i + 2);
+                    const byteVal = parseInt(byteHex, 16);
+                    const keyChar = ciscoKey.charCodeAt(((i - 1) / 2 + seed) % ciscoKey.length);
+
+                    // XOR to get the original character
+                    const charCode = byteVal ^ keyChar;
+                    decrypted += String.fromCharCode(charCode);
+                }
+
+                const resultElement = document.getElementById('decryptResult');
+                resultElement.textContent = decrypted;
+                animateSuccess(resultElement);
+            } catch (error) {
+                document.getElementById('decryptResult').textContent = "Error: " + error.message;
+            }
+        }
+
+        // SHA-256 hashing
+        async function hashSHA256() {
+            const input = document.getElementById('password').value;
+            if (!input) {
+                document.getElementById('shaResult').textContent = "Please enter a password first";
+                return;
+            }
+
+            const encoder = new TextEncoder();
+            const data = encoder.encode(input);
+            const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+            const hashArray = Array.from(new Uint8Array(hashBuffer));
+            const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+
+            const resultElement = document.getElementById('shaResult');
+            resultElement.textContent = hashHex;
+            animateSuccess(resultElement);
+        }
+
+        // Simulate reverse hash attempt (for demonstration purposes)
+        let reverseHashInterval;
+        let countdownValue = 0;
+
+        function startReverseHash() {
+            // Clear any existing interval
+            if (reverseHashInterval) {
+                clearInterval(reverseHashInterval);
+            }
+
+            const input = document.getElementById('password').value;
+            if (!input) {
+                document.getElementById('reverseHashResult').textContent = "Please enter a password first";
+                return;
+            }
+
+            // Generate hash for display
+            hashSHA256().then(() => {
+                const hashValue = document.getElementById('shaResult').textContent;
+
+                document.getElementById('reverseHashResult').innerHTML =
+                    `<p>Attempting to reverse hash: ${hashValue}</p>` +
+                    `<p>This is a demonstration to show why reverse hashing is practically impossible.</p>` +
+                    `<p>For a standard 8-character password with mixed case, numbers and symbols:</p>`;
+
+                // Calculate a large value for demonstration (estimate of brute force time)
+                // This is simplified and not accurate but illustrates the point
+                const possibleChars = 94; // printable ASCII characters
+                const passwordLength = Math.max(8, input.length);
+                const possibilities = Math.pow(possibleChars, passwordLength);
+
+                // Assume 10 billion hashes per second (modern hardware)
+                const secondsRequired = possibilities / 10000000000;
+
+                countdownValue = Math.floor(secondsRequired);
+                updateCountdown();
+
+                reverseHashInterval = setInterval(() => {
+                    updateCountdown();
+                }, 1000);
+            });
+        }
+
+        function updateCountdown() {
+            if (countdownValue <= 0) {
+                clearInterval(reverseHashInterval);
+                document.getElementById('countdown').textContent =
+                    "Even with this simplified demonstration, the time needed would be astronomical.";
+                return;
+            }
+
+            const years = Math.floor(countdownValue / (365 * 24 * 3600));
+            const days = Math.floor((countdownValue % (365 * 24 * 3600)) / (24 * 3600));
+            const hours = Math.floor((countdownValue % (24 * 3600)) / 3600);
+            const minutes = Math.floor((countdownValue % 3600) / 60);
+            const seconds = Math.floor(countdownValue % 60);
+
+            document.getElementById('countdown').textContent =
+                `Estimated time remaining: ${years} years, ${days} days, ${hours} hours, ${minutes} minutes, ${seconds} seconds`;
+
+            // Subtract a random amount between 1 and 1000 to make it look more dynamic
+            countdownValue -= Math.floor(Math.random() * 1000) + 1;
+        }
+
+        function copyToClipboard(elementId) {
+            const text = document.getElementById(elementId).textContent;
+            if (!text || text.includes("Please enter") || text.includes("Result will appear here")) {
+                return;
+            }
+            
+            navigator.clipboard.writeText(text).then(function () {
+                // Visual feedback instead of alert
+                const copyBtn = document.querySelector(`#${elementId} .copy-btn`);
+                const originalContent = copyBtn.innerHTML;
+                copyBtn.innerHTML = '<i class="fas fa-check"></i> Copied!';
+                
+                setTimeout(() => {
+                    copyBtn.innerHTML = originalContent;
+                }, 2000);
+            }, function () {
+                alert("Failed to copy to clipboard");
+            });
+        }
+
+        function animateSuccess(element) {
+            element.classList.add('animation-success');
+            setTimeout(() => {
+                element.classList.remove('animation-success');
+            }, 1500);
+        }
+
+        // Make copy buttons visible by default
+        document.addEventListener('DOMContentLoaded', function() {
+            const copyButtons = document.querySelectorAll('.copy-btn');
+            copyButtons.forEach(btn => {
+                btn.style.opacity = 1;
+            });
+            
+            // Still keep the hover behavior for better UX
+            const results = document.querySelectorAll('.result');
+            results.forEach(result => {
+                result.addEventListener('mouseenter', function() {
+                    const btn = this.querySelector('.copy-btn');
+                    if (btn) btn.style.opacity = 1;
+                });
+                result.addEventListener('mouseleave', function() {
+                    const btn = this.querySelector('.copy-btn');
+                    if (btn) btn.style.opacity = 1; // Keep visible always
+                });
+            });
+        });
+    </script>
+</body>
+
+</html>
